@@ -40,7 +40,7 @@ while(True):
     paymentInfo = emailStrings[1]
     emailMessage = emailStrings[2]
 
-    print("Subject line: " + str(subjectLine))
+    print("Subject line: " + subjectLine.decode("utf8"))
 
     print("Would you like to open this email? Y/N")
 
@@ -49,9 +49,14 @@ while(True):
 
     refundPayment = False
 
+    paymentInfoString = str(paymentInfo)
+    paymentInfoStringComponents = paymentInfoString.split()
+
+    paymentToken = paymentInfoStringComponents[1]
+
     if(emailOpenCommand == "Y"):
         print("Opening email. Displaying message now:")
-        print(str(emailMessage))
+        print(emailMessage.decode("utf8"))
         refundPayment = True
 
     elif(emailOpenCommand == "N"):
@@ -59,7 +64,8 @@ while(True):
 
     if(refundPayment):
 
-        refundMessage = bytes("Refund","utf8") + b"\0" + bytes(paymentInfo,"utf8")
+        
+        refundMessage = bytes("Refund","utf8") + b"\0" + bytes(paymentToken,"utf8")
         
 
         try:
@@ -69,7 +75,7 @@ while(True):
             print("Failed to send refund message.")
     
     else:
-        rejectMessage = bytes("Reject","utf8") + b"\0" + bytes(paymentInfo,"utf8")
+        rejectMessage = bytes("Reject","utf8") + b"\0" + bytes(paymentToken,"utf8")
 
         #rejectMessageBytes = bytes(rejectMessage, "utf8")
 

@@ -39,9 +39,9 @@ while(True):
         else:
             randomPaymentToken = random.randint(-999999,999999)
 
-    randomPaymentTokenString = str(randomPaymentToken)
+    randomPaymentTokenString = "PaymentData " + str(randomPaymentToken)
 
-    print("Generated random payment token of " + randomPaymentToken)
+    print("Generated random payment token of " + randomPaymentTokenString)
 
     print("Please input subject line for email.")
 
@@ -58,7 +58,7 @@ while(True):
 
 
 
-    subjectLine = bytes(subjectLine,"utf8")
+    subjectLine = bytes(subjectLineString,"utf8")
     paymentInfo = bytes(randomPaymentTokenString,"utf8")
     emailMessageContent = bytes(messageString,"utf8")
 
@@ -82,19 +82,26 @@ while(True):
 
     aliceResponseEmailData = aliceResponseEmail.split(b"\0")
 
+    aliceResponseEmailDataString = aliceResponseEmail.decode("utf8")
 
-    if(str(aliceResponseEmailData[0]) == "Refund"):
+    aliceResponseEmailComponents = aliceResponseEmailDataString.split()
 
-        refundedPaymentString = str(aliceResponseEmailData[1])
+
+    if(aliceResponseEmailComponents[0] == "Refunding"):
+
+        refundedPaymentString = aliceResponseEmailData[1].decode("utf8")
         paymentTokensRefunded.append(refundedPaymentString) #Log that the payment was refunded.
 
         print("Payment " + refundedPaymentString + " was refunded!")
 
-    elif(str(aliceResponseEmailData[0]) == "Reject"):
+    elif(aliceResponseEmailComponents[0] == "Rejected"):
 
-        rejectedPaymentString = str(aliceResponseEmailData[1])
+        rejectedPaymentString = aliceResponseEmailData[1].decode("utf8")
 
         print("Payment " + rejectedPaymentString + " was not refunded.")
+
+    else:
+        print("Failed to pay properly!")
 
 
     
