@@ -9,6 +9,8 @@ print("Server is online.")
 
 #Establish socket connection to Alice
 
+
+print("Awaiting connection from Alice.")
 try:
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSocket.bind((HOST, SERVERPORT))
@@ -20,6 +22,8 @@ except:
 
 print("Connected to Alice.")
 
+
+print("Awaiting connection from Bob.")
 try:
     bobSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     bobSocket.bind((HOST, BOBPORT))
@@ -52,6 +56,7 @@ while True:
     #    quit()
 
 
+    print("Message received from Bob.")
     emailStrings = email.split(b"\0")
 
     subjectLine = emailStrings[0]
@@ -77,11 +82,15 @@ while True:
 
         paymentTokensReceived.append(paymentInfoComponents[1])
 
+        print("Payment data is valid. Forwarding message to Alice.")
         try:
             aliceConn.sendall(email)
         except:
             print("Failed to forward email to Alice.")
             quit()
+
+
+        print("Waiting for response from Alice.")
 
         try:
             aliceResponseEmail = aliceConn.recv(1024)
@@ -92,6 +101,10 @@ while True:
         aliceResponseEmailData = aliceResponseEmail.split(b"\0")
 
         if(aliceResponseEmailData[0].decode("utf8") == "Refund"):
+
+            print("Alice accepted message. Payment will be refunded.")
+
+            print("Sending refund message to Bob.")
 
             refundedPaymentString = aliceResponseEmailData[1].decode("utf8")
             paymentTokensRefunded.append(refundedPaymentString) #Log that the payment was refunded.
@@ -105,6 +118,10 @@ while True:
 
 
         elif(aliceResponseEmailData[0].decode("utf8") == "Reject"):
+
+            print("Alice rejected message. Payment will not be refunded.")
+
+            print("Sending rejection message to Bob.")
 
             #rejectMessage = "Message rejected. The following payment will not be refunded:" + "\0" + str(aliceResponseEmail[1])
 

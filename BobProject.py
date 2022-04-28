@@ -18,7 +18,7 @@ except:
     print("Failed to connect to server")
     quit()
 
-
+print("Connected to server.")
 
 paymentTokensCreated = []
 paymentTokensRefunded = []
